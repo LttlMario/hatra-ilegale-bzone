@@ -223,6 +223,23 @@
             background: var(--bg-panel-hover);
         }
 
+        /* Admin Mode Indicator */
+        #admin-badge {
+            display: none;
+            background: rgba(70, 211, 105, 0.15);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            align-items: center;
+            gap: 6px;
+        }
+        #admin-badge.active {
+            display: flex;
+        }
+
         /* Special Recipe Action Box & Button */
         .recipe-action-wrapper {
             display: none;
@@ -396,6 +413,18 @@
             background: var(--bg-panel-hover);
         }
 
+        /* Admin Controls Container (Hidden by default) */
+        #admin-controls-section {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+        }
+        #admin-controls-section.active {
+            display: flex;
+        }
+
         /* Filters Section */
         .filters-header {
             display: flex;
@@ -412,7 +441,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 220px;
+            max-height: 180px;
             overflow-y: auto;
         }
 
@@ -512,6 +541,9 @@
         .sidebar-actions {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
+            max-width: 200px;
+            justify-content: flex-end;
         }
 
         .icon-btn {
@@ -772,6 +804,8 @@
                     <input type="text" id="search-input" placeholder="Caută locații, spitale...">
                     <div class="search-results" id="search-results"></div>
                 </div>
+                <div id="admin-badge">🔒 Admin Activ</div>
+                <button class="btn" id="admin-login-btn" onclick="logheazaAdmin()" title="Autentificare Administrator">🔑 Admin</button>
                 <button class="btn" id="theme-toggle-btn" title="Schimbă Tema">🌓</button>
             </div>
         </header>
@@ -798,6 +832,21 @@
                         <button class="tool-action-btn" onclick="showFavoritesList()">
                             <span>Favorite Salvate</span>
                             <span id="fav-counter-badge" style="color: var(--accent);">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin Controls Panel (Disponibil doar după introducerea parolei) -->
+                <div id="admin-controls-section">
+                    <div class="menu-section-title" style="color: var(--success);">Panou Administrator</div>
+                    <div class="quick-tools-grid">
+                        <button class="tool-action-btn" onclick="deschideFormularAdaugare()" style="border-color: var(--success); color: var(--success);">
+                            <span>+ Adaugă Locație Nouă</span>
+                            <span>➕</span>
+                        </button>
+                        <button class="tool-action-btn" onclick="exportaDate()" style="border-color: var(--accent); color: var(--accent);">
+                            <span>Exportă Datele (JSON)</span>
+                            <span>💾</span>
                         </button>
                     </div>
                 </div>
@@ -831,6 +880,9 @@
                     <div class="sidebar-actions">
                         <button class="icon-btn" id="sb-favorite-btn" title="Adaugă la Favorite">⭐</button>
                         <button class="icon-btn" id="sb-copy-btn" title="Copiază Informațiile">📋</button>
+                        <button class="icon-btn" id="sb-edit-btn" onclick="editeazaLocatieCurenta()" title="Editează Detaliile" style="display:none; border-color: var(--success); color: var(--success);">✏️</button>
+                        <button class="icon-btn" id="sb-move-btn" onclick="activeazaMutarePin()" title="Mută Pinul pe Hartă" style="display:none; border-color: var(--accent); color: var(--accent);">📍</button>
+                        <button class="icon-btn" id="sb-delete-btn" onclick="stergeLocatieCurenta()" title="Șterge Locația" style="display:none; border-color: var(--danger); color: var(--danger);">🗑️</button>
                         <button class="icon-btn" id="sb-close-btn" title="Închide">✕</button>
                     </div>
                 </div>
@@ -893,6 +945,11 @@
         /* ==========================================
            CONFIG & CATEGORIES SETUP
            ========================================== */
+        const PAROLA_ADMIN = "admin123";
+        let isAdminLoggedIn = false;
+        let isDraggingPin = false;
+        let draggingMarkerId = null;
+
         const CONFIG = {
             maps: {
                 ls: {
@@ -929,7 +986,7 @@
                 title: 'Rulotă Livrat (Murrieta Oil Field)',
                 description: 'Punct strategic pentru livrări și activități în zona de est / Murrieta Oil Field.',
                 images: ['image_6d67a5.jpg'],
-                x: 74.2, y: 52.5,
+                x: 57.6, y: 85,
                 notes: 'Atenție la patrulele din zonă.',
                 requirements: 'Contract activ de livrare',
                 rewards: 'Fonduri și XP',
@@ -942,7 +999,7 @@
                 title: 'Pescuit Braconier',
                 description: 'Zonă maritimă dedicată activităților ilegale de pescuit și recoltare.',
                 images: ['image_6d6b63.jpg'],
-                x: 85.0, y: 24.1,
+                x: 55.4, y: 3.5,
                 notes: 'Necesar echipament de scufundare / barcă.',
                 requirements: 'Niciuna',
                 rewards: 'Pește și bunuri rare',
@@ -955,7 +1012,7 @@
                 title: 'Cumpărare Acetonă (Humane Labs)',
                 description: 'Locația de achiziție a acetonei, situată în perimetrul Humane Labs & Research.',
                 images: ['image_6d6bdd.jpg'],
-                x: 82.5, y: 35.8,
+                x: 74.15, y: 37.34,
                 notes: 'Necesar pentru procesarea cocainei.',
                 requirements: 'Bani cash / Licență',
                 rewards: 'Acetonă x1',
@@ -968,7 +1025,7 @@
                 title: 'Rulotă Livrat (Vespucci / Magellan Ave)',
                 description: 'Punct alternativ de livrare detaliat în zona Vespucci / Magellan Avenue.',
                 images: ['image_6d6f9f.jpg'],
-                x: 25.1, y: 72.4,
+                x: 37.3, y: 77,
                 notes: 'Zonă urbană intens circulata.',
                 requirements: 'Contract activ de livrare',
                 rewards: 'Fonduri și XP',
@@ -981,7 +1038,7 @@
                 title: 'Rulotă Livrat (Grand Senora Desert)',
                 description: 'Punct de livrare în mediul de deșert, aproape de Harmony.',
                 images: ['image_6d6ee2.jpg'],
-                x: 58.0, y: 38.3,
+                x: 52.9, y: 44.4,
                 notes: 'Acces facil cu autovehicule de teren.',
                 requirements: 'Contract activ de livrare',
                 rewards: 'Fonduri și XP',
@@ -994,7 +1051,7 @@
                 title: 'Rulotă Livrat (Mirror Park)',
                 description: 'Traseu și locație de livrare amplasată în zona rezidențială Mirror Park.',
                 images: ['image_6d6f06.jpg'],
-                x: 65.4, y: 49.1,
+                x: 57, y: 73.4,
                 notes: 'Evitați atragerile inutile de atenție.',
                 requirements: 'Contract activ de livrare',
                 rewards: 'Fonduri și XP',
@@ -1002,12 +1059,12 @@
             },
             {
                 id: 'craftare-arme',
-                map: 'ls',
+                map: 'cayo',
                 category: 'weapons',
                 title: 'Craftare Arme',
                 description: 'Atelier sau stație specializată pentru fabricarea echipamentului armat.',
                 images: ['image_6dc1bb.jpg'],
-                x: 42.6, y: 45.0,
+                x: 56, y: 54.4,
                 notes: 'Necesită componente de armă și licență.',
                 requirements: 'Licență de armurier',
                 rewards: 'Arme și accesorii',
@@ -1015,12 +1072,12 @@
             },
             {
                 id: 'procesare-marijuana',
-                map: 'ls',
+                map: 'cayo',
                 category: 'drugs',
                 title: 'Procesare Marijuana',
                 description: 'Centrul de rafinare și procesare a producției de marijuana.',
                 images: ['image_6dc259.jpg'],
-                x: 34.2, y: 28.5,
+                x: 62.2, y: 49.3,
                 notes: 'Asigurați-vă că aveți materie primă suficientă.',
                 requirements: 'Frunze de Cannabis',
                 rewards: 'Pachete de Marijuana',
@@ -1028,12 +1085,12 @@
             },
             {
                 id: 'procesare-cocaina',
-                map: 'ls',
+                map: 'cayo',
                 category: 'drugs',
                 title: 'Procesare Cocaină',
                 description: 'Locația dedicată procesării cocainei (necesită acetonă de la Humane Labs).',
                 images: ['image_6dc5bb.jpg'],
-                x: 51.3, y: 21.8,
+                x: 56.7, y: 46.4,
                 notes: 'Combinație chimică strictă.',
                 requirements: 'Frunze de Cocă + Acetonă',
                 rewards: 'Cocaină pură',
@@ -1042,11 +1099,11 @@
             {
                 id: 'camera-tortura',
                 map: 'ls',
-                category: 'suppliers',
+                category: 'weapons',
                 title: 'Camera de Tortură',
                 description: 'Locație ascunsă pentru interogatorii și activități speciale ale facțiunii.',
                 images: ['image_6e3e73.jpg'],
-                x: 44.9, y: 61.2,
+                x: 46.9, y: 85.2,
                 notes: 'Acces restrictiv membrii autorizați.',
                 requirements: 'Rang intern în facțiune',
                 rewards: 'Control și informații',
@@ -1059,7 +1116,7 @@
                 title: 'Spital Sandy Shores',
                 description: 'Unitate medicală principală din zona de nord / Sandy Shores.',
                 images: ['image_6e4c80.jpg'],
-                x: 52.1, y: 31.4,
+                x: 58.8, y: 38.5,
                 notes: 'Disponibil pentru tratament rapid în nord.',
                 requirements: 'Niciuna',
                 rewards: 'Refacere completă sănătate',
@@ -1072,7 +1129,7 @@
                 title: 'Spital Mirror',
                 description: 'Punct medical localizat în zona estică / Murrieta / Mirror.',
                 images: ['image_6e4cfa.jpg'],
-                x: 67.2, y: 46.8,
+                x: 55.4, y: 77.7,
                 notes: 'Asistență medicală de urgență.',
                 requirements: 'Niciuna',
                 rewards: 'Refacere completă sănătate',
@@ -1085,7 +1142,7 @@
                 title: 'Vânzare Semințe Coca & Canabis',
                 description: 'Punct de achiziție semințe pentru cultură situat în zona de nord / Procopio Beach.',
                 images: ['image_6e5081.jpg'],
-                x: 50.4, y: 12.2,
+                x: 57.8, y: 16,
                 notes: 'Stoc limitat per oră.',
                 requirements: 'Fonduri cash',
                 rewards: 'Semințe de calitate superioară',
@@ -1096,10 +1153,10 @@
                 map: 'cayo',
                 category: 'hospitals',
                 title: 'Spital Cayo',
-                description: 'Punctul medical principal de pe insulă pentru recuperare și tratament.',
+                description: 'Punctul medical pe insulă pentru recuperare și tratament.',
                 images: ['image_6d687a.jpg', 'image_6dc214.jpg'],
-                x: 50.0, y: 45.0,
-                notes: 'Sigur pentru membrii facțiunii pe insulă.',
+                x: 54.3, y: 53.9,
+                notes: 'Niciodata singuri pe Cayo!',
                 requirements: 'Niciuna',
                 rewards: 'Tratament complet',
                 lastUpdated: '2026-07-25'
@@ -1111,7 +1168,7 @@
                 title: 'Spital Cayo (Alternativ 1 & 2)',
                 description: 'Perspectivă apropiată și hartă de orientare spre zona medicală de pe insulă.',
                 images: ['image_6e489f.jpg', 'image_6e491e.jpg'],
-                x: 53.5, y: 48.0,
+                x: 81.2, y: 51.3,
                 notes: 'Intrare secundară.',
                 requirements: 'Niciuna',
                 rewards: 'Asistență medicală',
@@ -1161,6 +1218,10 @@
                 maps.ls.invalidateSize();
             });
 
+            maps.ls.on('click', (e) => {
+                handleMapClickForPinMove(e, 'ls');
+            });
+
             const cayoConfig = CONFIG.maps.cayo;
             maps.cayo = L.map('map-cayo', {
                 crs: L.CRS.Simple,
@@ -1178,6 +1239,10 @@
 
             cayoOverlay.on('load', () => {
                 maps.cayo.invalidateSize();
+            });
+
+            maps.cayo.on('click', (e) => {
+                handleMapClickForPinMove(e, 'cayo');
             });
 
             markerLayers.ls = L.layerGroup().addTo(maps.ls);
@@ -1303,6 +1368,168 @@
         }
 
         /* ==========================================
+           ADMIN LOGIN & EDITING SYSTEM
+           ========================================== */
+        function logheazaAdmin() {
+            if (isAdminLoggedIn) {
+                showToast('Ești deja autentificat ca administrator!');
+                return;
+            }
+            const parolaIntrodusa = prompt("Introdu parola de administrator:");
+            if (parolaIntrodusa === PAROLA_ADMIN) {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-login-btn').style.display = 'none';
+                document.getElementById('admin-badge').classList.add('active');
+                document.getElementById('admin-controls-section').classList.add('active');
+                
+                if (currentSelectedLocation) {
+                    document.getElementById('sb-edit-btn').style.display = 'flex';
+                    document.getElementById('sb-move-btn').style.display = 'flex';
+                    document.getElementById('sb-delete-btn').style.display = 'flex';
+                }
+                showToast('Autentificare reușită! Modul Admin activ.');
+            } else if (parolaIntrodusa !== null) {
+                alert("Parolă incorectă!");
+            }
+        }
+
+        function salveazaDateleInStorage() {
+            localStorage.setItem('gta_guide_custom_data', JSON.stringify(DATA));
+            renderMarkers();
+        }
+
+        function deschideFormularAdaugare() {
+            const title = prompt("Introdu titlul locației:");
+            if (!title) return;
+            const description = prompt("Introdu descrierea locației:");
+            const category = prompt("Introdu categoria (deliveries, hospitals, drugs, weapons, suppliers):", "deliveries");
+            if (!CONFIG.categories[category]) {
+                alert("Categorie invalidă! Alege dintre: deliveries, hospitals, drugs, weapons, suppliers");
+                return;
+            }
+            const map = prompt("Introdu harta (ls sau cayo):", "ls");
+            if (!CONFIG.maps[map]) {
+                alert("Hartă invalidă! Folosește 'ls' sau 'cayo'.");
+                return;
+            }
+            const x = 50;
+            const y = 50;
+            const image = prompt("Introdu numele imaginii (ex: imagine.jpg):", "image_6d67a5.jpg");
+
+            const nouaLocatie = {
+                id: 'loc-' + Date.now(),
+                map: map,
+                category: category,
+                title: title,
+                description: description || '',
+                images: [image],
+                x: x,
+                y: y,
+                notes: 'Adăugat de administrator',
+                requirements: 'Niciuna',
+                rewards: 'Standard',
+                lastUpdated: '2026-07-25'
+            };
+
+            DATA.push(nouaLocatie);
+            salveazaDateleInStorage();
+            selectLocation(nouaLocatie.id);
+            
+            activeazaMutarePin();
+            showToast('Locație adăugată! Dă click pe hartă unde vrei să plasezi pinul.');
+        }
+
+        function editeazaLocatieCurenta() {
+            if (!currentSelectedLocation || !isAdminLoggedIn) return;
+            
+            const title = prompt("Modifică titlul:", currentSelectedLocation.title);
+            if (title === null) return;
+            const description = prompt("Modifică descrierea:", currentSelectedLocation.description);
+            const notes = prompt("Modifică notele:", currentSelectedLocation.notes || '');
+            const image = prompt("Modifică imaginea principală:", currentSelectedLocation.images[0] || '');
+
+            currentSelectedLocation.title = title;
+            currentSelectedLocation.description = description;
+            currentSelectedLocation.notes = notes;
+            if (image) currentSelectedLocation.images[0] = image;
+            currentSelectedLocation.lastUpdated = '2026-07-25';
+
+            salveazaDateleInStorage();
+            selectLocation(currentSelectedLocation.id, false);
+            showToast('Locație actualizată cu succes!');
+        }
+
+        function activeazaMutarePin() {
+            if (!currentSelectedLocation || !isAdminLoggedIn) return;
+            isDraggingPin = true;
+            draggingMarkerId = currentSelectedLocation.id;
+            
+            if (currentSelectedLocation.map !== state.currentMap) {
+                switchMap(currentSelectedLocation.map);
+            }
+
+            document.getElementById('sidebar').classList.remove('open');
+            showToast(`Mod mutare activ pentru "${currentSelectedLocation.title}". Click oriunde pe hartă!`);
+        }
+
+        function handleMapClickForPinMove(e, mapKey) {
+            if (!isDraggingPin || !draggingMarkerId) return;
+            
+            const loc = DATA.find(item => item.id === draggingMarkerId);
+            if (!loc) {
+                isDraggingPin = false;
+                draggingMarkerId = null;
+                return;
+            }
+
+            if (loc.map !== mapKey) {
+                showToast(`Această locație aparține hărții ${loc.map.toUpperCase()}! Schimbă harta.`);
+                return;
+            }
+
+            const mapCfg = CONFIG.maps[mapKey];
+            const clickedLat = e.latlng.lat;
+            const clickedLng = e.latlng.lng;
+
+            const newY = parseFloat(((mapCfg.height - clickedLat) / mapCfg.height * 100).toFixed(2));
+            const newX = parseFloat((clickedLng / mapCfg.width * 100).toFixed(2));
+
+            loc.x = Math.max(0, Math.min(100, newX));
+            loc.y = Math.max(0, Math.min(100, newY));
+            loc.lastUpdated = '2026-07-25';
+
+            salveazaDateleInStorage();
+            
+            isDraggingPin = false;
+            const targetId = draggingMarkerId;
+            draggingMarkerId = null;
+
+            selectLocation(targetId);
+            showToast('Pinul a fost mutat cu succes pe noua poziție!');
+        }
+
+        function stergeLocatieCurenta() {
+            if (!currentSelectedLocation || !isAdminLoggedIn) return;
+            if (confirm(`Sigur doriți să ștergeți locația "${currentSelectedLocation.title}"?`)) {
+                DATA = DATA.filter(item => item.id !== currentSelectedLocation.id);
+                salveazaDateleInStorage();
+                closeSidebar();
+                showToast('Locație ștearsă cu succes!');
+            }
+        }
+
+        function exportaDate() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(DATA, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "locatii_gta_export.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Date exportate cu succes!');
+        }
+
+        /* ==========================================
            SIDEBAR & GALLERY LOGIC
            ========================================== */
         function selectLocation(id, zoomTo = true) {
@@ -1332,6 +1559,12 @@
             document.getElementById('sb-rewards').textContent = loc.rewards || 'Standard';
             document.getElementById('sb-notes').textContent = loc.notes || 'Fără note suplimentare.';
             document.getElementById('sb-updated').textContent = `Modificat: ${loc.lastUpdated || '2026-07-25'}`;
+
+            if (isAdminLoggedIn) {
+                document.getElementById('sb-edit-btn').style.display = 'flex';
+                document.getElementById('sb-move-btn').style.display = 'flex';
+                document.getElementById('sb-delete-btn').style.display = 'flex';
+            }
 
             const recipeWrapper = document.getElementById('sb-recipe-wrapper');
             const recipeCustomTitle = document.getElementById('sb-recipe-custom-title');
@@ -1441,7 +1674,6 @@
             state.selectedLocationId = null;
             history.pushState("", document.title, window.location.pathname + window.location.search);
             
-            // Aici harta revine la centrat/standard când se închide panoul de detalii
             resetCurrentMapView();
         }
 
@@ -1504,29 +1736,26 @@
                     const cat = CONFIG.categories[match.category];
                     const div = document.createElement('div');
                     div.className = 'search-result-item';
-                    div.innerHTML = `
-                        <span>${cat ? cat.icon : '📍'} ${match.title}</span>
-                        <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">${match.map}</span>
-                    `;
-                    div.onclick = () => {
+                    div.innerHTML = `<span>${cat ? cat.icon : '📍'} ${match.title}</span> <span style="font-size:11px; color: var(--text-muted);">${match.map.toUpperCase()}</span>`;
+                    div.addEventListener('click', () => {
                         selectLocation(match.id);
                         resultsBox.style.display = 'none';
                         searchInput.value = '';
-                    };
+                    });
                     resultsBox.appendChild(div);
                 });
                 resultsBox.style.display = 'block';
             });
 
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.search-container')) {
+                if (!searchInput.contains(e.target) && !resultsBox.contains(e.target)) {
                     resultsBox.style.display = 'none';
                 }
             });
         }
 
         /* ==========================================
-           UTILITIES & EVENT LISTENERS
+           TOAST NOTIFICATIONS
            ========================================== */
         function showToast(message) {
             const container = document.getElementById('toast-container');
@@ -1534,9 +1763,14 @@
             toast.className = 'toast';
             toast.textContent = message;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
+            setTimeout(() => {
+                toast.remove();
+            }, 2500);
         }
 
+        /* ==========================================
+           EVENT LISTENERS & BINDINGS
+           ========================================== */
         function setupEventListeners() {
             document.getElementById('sb-close-btn').addEventListener('click', closeSidebar);
 
@@ -1544,54 +1778,45 @@
                 if (!currentSelectedLocation) return;
                 const id = currentSelectedLocation.id;
                 const index = state.favorites.indexOf(id);
-                const favBtn = document.getElementById('sb-favorite-btn');
-
                 if (index > -1) {
                     state.favorites.splice(index, 1);
-                    favBtn.classList.remove('favorited');
-                    favBtn.textContent = '⭐';
                     showToast('Eliminat din favorite');
                 } else {
                     state.favorites.push(id);
-                    favBtn.classList.add('favorited');
-                    favBtn.textContent = '★';
-                    showToast('Adăugat la favorite');
+                    showToast('Adăugat la favorite ⭐');
                 }
                 localStorage.setItem('gta_guide_favorites', JSON.stringify(state.favorites));
                 updateFavoritesCounter();
+                selectLocation(id, false);
             });
 
             document.getElementById('sb-copy-btn').addEventListener('click', () => {
                 if (!currentSelectedLocation) return;
-                const text = `${currentSelectedLocation.title} (${currentSelectedLocation.category.toUpperCase()}) - Harta: ${currentSelectedLocation.map.toUpperCase()} [X: ${currentSelectedLocation.x}%, Y: ${currentSelectedLocation.y}%] - Familia Es Todo`;
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast('Informațiile au fost copiate!');
-                });
+                const text = `Locație: ${currentSelectedLocation.title}\nDescriere: ${currentSelectedLocation.description}\nCerințe: ${currentSelectedLocation.requirements}\nRecompense: ${currentSelectedLocation.rewards}\nNote: ${currentSelectedLocation.notes}`;
+                navigator.clipboard.writeText(text);
+                showToast('Informațiile au fost copiate în clipboard! 📋');
             });
 
             document.getElementById('theme-toggle-btn').addEventListener('click', () => {
                 state.theme = state.theme === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', state.theme);
                 localStorage.setItem('gta_guide_theme', state.theme);
-                showToast(`Modul ${state.theme === 'dark' ? 'Întunecat' : 'Luminos'} activat`);
-            });
-
-            window.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeModal();
-                    closeSidebar();
-                }
-                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-                    e.preventDefault();
-                    const searchInput = document.getElementById('search-input');
-                    if (searchInput) searchInput.focus();
-                }
+                showToast(`Temă schimbată (${state.theme === 'dark' ? 'Întunecată' : 'Luminoasă'})`);
             });
 
             setupSearch();
         }
 
-        window.addEventListener('DOMContentLoaded', initMaps);
+        window.addEventListener('DOMContentLoaded', () => {
+            initMaps();
+            
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                setTimeout(() => {
+                    selectLocation(hash);
+                }, 400);
+            }
+        });
     </script>
 </body>
 </html>

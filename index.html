@@ -64,7 +64,7 @@
             width: 100vw;
             height: 100vh;
             display: grid;
-            grid-template-rows: 70px 1fr;
+            grid-template-rows: 84px 1fr;
             grid-template-columns: 1fr;
         }
 
@@ -75,7 +75,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 24px;
             z-index: 1000;
             box-shadow: var(--shadow);
         }
@@ -87,7 +87,7 @@
         }
 
         .logo-icon {
-            font-size: 20px;
+            font-size: 22px;
             background: linear-gradient(135deg, var(--accent), var(--success));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -96,14 +96,41 @@
         }
 
         .logo-text-group h1 {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--text-muted);
         }
 
         .logo-text-group h2 {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        /* Header Centered Area */
+        .header-center-area {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .header-center-title {
             font-size: 16px;
             font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .header-center-subtitle {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.8px;
+            margin-top: 2px;
         }
 
         .controls-area {
@@ -115,17 +142,17 @@
         /* Search Box */
         .search-container {
             position: relative;
-            width: 280px;
+            width: 320px;
         }
 
         .search-container input {
             width: 100%;
             background: var(--bg-main);
             border: 1px solid var(--border-color);
-            padding: 10px 15px 10px 38px;
+            padding: 12px 16px 12px 42px;
             border-radius: var(--border-radius);
             color: var(--text-main);
-            font-size: 14px;
+            font-size: 15px;
             outline: none;
             transition: var(--transition);
         }
@@ -137,11 +164,11 @@
 
         .search-icon {
             position: absolute;
-            left: 12px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .search-results {
@@ -160,8 +187,8 @@
         }
 
         .search-result-item {
-            padding: 10px 15px;
-            font-size: 13px;
+            padding: 11px 16px;
+            font-size: 14px;
             cursor: pointer;
             border-bottom: 1px solid var(--border-color);
             display: flex;
@@ -180,9 +207,9 @@
             background: var(--bg-main);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 9px 16px;
+            padding: 11px 18px;
             border-radius: var(--border-radius);
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
@@ -196,15 +223,59 @@
             background: var(--bg-panel-hover);
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: #0b1220;
-            border: none;
+        /* Special Recipe Action Box & Button */
+        .recipe-action-wrapper {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            background: rgba(0, 212, 255, 0.03);
+            border: 1px dashed var(--border-color);
+            padding: 12px;
+            border-radius: var(--border-radius);
         }
 
-        .btn-primary:hover {
-            opacity: 0.9;
+        .recipe-action-wrapper.active {
+            display: flex;
+        }
+
+        .recipe-action-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .recipe-action-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .recipe-action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(70, 211, 105, 0.15));
+            border: 1px solid var(--accent);
+            color: var(--text-main);
+            padding: 11px 16px;
+            border-radius: var(--border-radius);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 0 15px var(--accent-glow);
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .recipe-action-btn:hover {
             background: var(--accent);
+            color: #0b1220;
+            transform: translateY(-2px);
         }
 
         /* Map Viewport Wrapper */
@@ -238,47 +309,121 @@
         }
 
         /* ==========================================
-           FILTERS PANEL
+           LEFT SIDEBAR & CONTROLS MENU
            ========================================== */
-        .filters-panel {
+        .control-sidebar {
             position: absolute;
-            top: 20px;
+            top: 28px;
             left: 20px;
+            transform: none;
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            padding: 15px;
+            padding: 20px;
             z-index: 900;
-            width: 240px;
+            width: 310px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
 
+        .menu-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        /* Map Selection Group */
+        .map-switcher-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .map-switch-btn {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .map-switch-btn.active {
+            background: var(--accent);
+            color: #0b1220;
+            border-color: var(--accent);
+        }
+
+        .map-switch-btn:hover:not(.active) {
+            color: var(--text-main);
+            background: var(--bg-panel-hover);
+        }
+
+        /* Quick Tools Panel inside Left Menu */
+        .quick-tools-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .tool-action-btn {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+
+        .tool-action-btn:hover {
+            border-color: var(--accent);
+            background: var(--bg-panel-hover);
+        }
+
+        /* Filters Section */
         .filters-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+            margin-top: 2px;
         }
 
         .filter-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
         }
 
         .filter-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-size: 13px;
             cursor: pointer;
-            padding: 6px 8px;
-            border-radius: 8px;
+            padding: 7px 8px;
+            border-radius: 6px;
             transition: var(--transition);
         }
 
@@ -294,7 +439,7 @@
         }
 
         /* ==========================================
-           MARKER & CUSTOM PULSE STYLING
+           MARKER STYLING
            ========================================== */
         .custom-marker {
             position: relative;
@@ -315,13 +460,6 @@
         .custom-marker:hover {
             transform: scale(1.2);
             z-index: 1000 !important;
-        }
-
-        .custom-marker.selected {
-            transform: scale(1.35);
-            border-color: var(--success);
-            box-shadow: 0 0 25px rgba(70, 211, 105, 0.5);
-            z-index: 1001 !important;
         }
 
         /* ==========================================
@@ -493,7 +631,7 @@
             padding-top: 12px;
         }
 
-        /* Image Lightbox Modal */
+        /* Lightbox Modal */
         .modal {
             display: none;
             position: fixed;
@@ -577,11 +715,12 @@
 
         /* Responsive Breakpoints */
         @media (max-width: 768px) {
-            .filters-panel {
+            .control-sidebar {
                 top: 10px;
                 left: 10px;
+                transform: none;
                 width: calc(100% - 20px);
-                max-height: 160px;
+                max-height: 200px;
                 overflow-y: auto;
             }
             .sidebar {
@@ -602,6 +741,9 @@
             .search-container {
                 display: none;
             }
+            .header-center-area {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -614,29 +756,59 @@
                 <div class="logo-icon">⭐</div>
                 <div class="logo-text-group">
                     <h1>Familia Es Todo</h1>
-                    <h2>Atlas Locații & Hărți</h2>
+                    <h2></h2>
                 </div>
             </div>
+
+            <!-- Header Centered Title & Subtitle -->
+            <div class="header-center-area">
+                <div class="header-center-title">Hărți & Locații</div>
+                <div class="header-center-subtitle">By Little Mario</div>
+            </div>
+
             <div class="controls-area">
                 <div class="search-container">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="search-input" placeholder="Caută locații, spitale, livrări...">
+                    <input type="text" id="search-input" placeholder="Caută locații, spitale...">
                     <div class="search-results" id="search-results"></div>
                 </div>
-                <button class="btn btn-primary" id="map-switch-btn">Schimbă pe Cayo Perico</button>
                 <button class="btn" id="theme-toggle-btn" title="Schimbă Tema">🌓</button>
             </div>
         </header>
 
         <!-- Main Map Viewport Wrapper -->
         <div id="map-container-wrapper">
-            <!-- Filters Panel -->
-            <div class="filters-panel">
-                <div class="filters-header">
-                    <span>Categorii</span>
-                    <span id="active-count" style="font-size: 11px; color: var(--accent);">5/5 active</span>
+            <!-- Left Controls Sidebar Menu -->
+            <div class="control-sidebar">
+                <div>
+                    <div class="menu-section-title">Selectare Hartă</div>
+                    <div class="map-switcher-group">
+                        <button class="map-switch-btn active" id="tab-ls" onclick="switchMap('ls')">Los Santos</button>
+                        <button class="map-switch-btn" id="tab-cayo" onclick="switchMap('cayo')">Cayo Perico</button>
+                    </div>
                 </div>
-                <div class="filter-list" id="filter-list"></div>
+
+                <div>
+                    <div class="menu-section-title">Opțiuni Hartă</div>
+                    <div class="quick-tools-grid">
+                        <button class="tool-action-btn" onclick="resetCurrentMapView()">
+                            <span>Centrare Standard</span>
+                            <span>🎯</span>
+                        </button>
+                        <button class="tool-action-btn" onclick="showFavoritesList()">
+                            <span>Favorite Salvate</span>
+                            <span id="fav-counter-badge" style="color: var(--accent);">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="filters-header">
+                        <span class="menu-section-title" style="margin-bottom:0;">Categorii</span>
+                        <span id="active-count" style="font-size: 11px; color: var(--accent);">5/5 active</span>
+                    </div>
+                    <div class="filter-list" id="filter-list" style="margin-top: 8px;"></div>
+                </div>
             </div>
 
             <!-- Los Santos Map View -->
@@ -682,9 +854,21 @@
                         <h4>Note</h4>
                         <p id="sb-notes">Informații suplimentare.</p>
                     </div>
+
+                    <!-- Secțiune cu titlu, descriere și buton plasată sub note -->
+                    <div class="recipe-action-wrapper" id="sb-recipe-wrapper">
+                        <div class="recipe-action-title" id="sb-recipe-custom-title">Centru de Rețete & Calculatoare</div>
+                        <div class="recipe-action-desc" id="sb-recipe-custom-desc">Accesează calculatorul universal pentru a verifica resursele, necesarul și cantitățile exacte.</div>
+                        <a href="https://lttlmario.github.io/calculator-universal-bzone/" target="_blank" class="recipe-action-btn">
+                            <span>⚙️</span>
+                            <span id="sb-recipe-text">Vezi Rețete & Calculator</span>
+                            <span>↗</span>
+                        </a>
+                    </div>
+
                     <div class="meta-row">
                         <span id="sb-updated">Modificat: 2026-07-25</span>
-                        <span style="color: var(--accent); font-weight: 600;">by Little Mario</span>
+                        <span style="color: var(--accent); font-weight: 600;">Familia Es Todo</span>
                     </div>
                 </div>
             </div>
@@ -714,16 +898,18 @@
                 ls: {
                     id: 'ls',
                     name: 'Los Santos & Blaine County',
-                    width: 8192,
-                    height: 8192,
-                    image: 'assets/maps/los_santos.webp'
+                    width: 2560,
+                    height: 2560,
+                    image: 'gtav.jpg',
+                    defaultZoom: -1.5
                 },
                 cayo: {
                     id: 'cayo',
                     name: 'Cayo Perico',
-                    width: 4096,
-                    height: 4096,
-                    image: 'assets/maps/cayo.webp'
+                    width: 1122,
+                    height: 1060,
+                    image: 'cayo.jpg',
+                    defaultZoom: -1
                 }
             },
             categories: {
@@ -735,11 +921,7 @@
             }
         };
 
-        /* ==========================================
-           MARKER DATA REPOSITORY (Familia Es Todo)
-           ========================================== */
-        const DATA = [
-            // Los Santos & Blaine County Locations
+        const DEFAULT_DATA = [
             {
                 id: 'rulota-murrieta',
                 map: 'ls',
@@ -860,7 +1042,7 @@
             {
                 id: 'camera-tortura',
                 map: 'ls',
-                category: 'weapons',
+                category: 'suppliers',
                 title: 'Camera de Tortură',
                 description: 'Locație ascunsă pentru interogatorii și activități speciale ale facțiunii.',
                 images: ['image_6e3e73.jpg'],
@@ -868,19 +1050,6 @@
                 notes: 'Acces restrictiv membrii autorizați.',
                 requirements: 'Rang intern în facțiune',
                 rewards: 'Control și informații',
-                lastUpdated: '2026-07-25'
-            },
-            {
-                id: 'rulota-grove',
-                map: 'ls',
-                category: 'deliveries',
-                title: 'Rulotă Grove',
-                description: 'Punct de livrare și operare amplasat în zona Grove Street.',
-                images: ['image_6e459b.jpg'],
-                x: 31.5, y: 68.7,
-                notes: 'Zonă disputată.',
-                requirements: 'Contract activ de livrare',
-                rewards: 'Fonduri și XP',
                 lastUpdated: '2026-07-25'
             },
             {
@@ -910,19 +1079,6 @@
                 lastUpdated: '2026-07-25'
             },
             {
-                id: 'procesare-ciuperci-praf',
-                map: 'ls',
-                category: 'drugs',
-                title: 'Procesare Ciuperci & Praf de Pușcă',
-                description: 'Zonă specializată pentru fabricarea prafului de pușcă și procesarea ciupercilor.',
-                images: ['image_6e4d74.jpg'],
-                x: 79.1, y: 42.0,
-                notes: 'Echipament de protecție recomandat.',
-                requirements: 'Materiale brute',
-                rewards: 'Praf de pușcă / Spores',
-                lastUpdated: '2026-07-25'
-            },
-            {
                 id: 'vanzare-seminte',
                 map: 'ls',
                 category: 'suppliers',
@@ -935,8 +1091,6 @@
                 rewards: 'Semințe de calitate superioară',
                 lastUpdated: '2026-07-25'
             },
-
-            // Cayo Perico Locations
             {
                 id: 'cayo-spital-1',
                 map: 'cayo',
@@ -968,6 +1122,7 @@
         /* ==========================================
            APPLICATION STATE & PERSISTENCE
            ========================================== */
+        let DATA = JSON.parse(localStorage.getItem('gta_guide_custom_data')) || DEFAULT_DATA;
         let state = {
             currentMap: localStorage.getItem('gta_guide_last_map') || 'ls',
             activeFilters: Object.keys(CONFIG.categories),
@@ -982,40 +1137,48 @@
         let currentSelectedLocation = null;
 
         /* ==========================================
-           MAP ENGINE INITIALIZATION (Leaflet CRS.Simple)
+           MAP ENGINE INITIALIZATION
            ========================================== */
         function initMaps() {
             document.documentElement.setAttribute('data-theme', state.theme);
 
-            // Los Santos Map
             const lsConfig = CONFIG.maps.ls;
             maps.ls = L.map('map-ls', {
                 crs: L.CRS.Simple,
-                minZoom: -3,
+                minZoom: -4,
                 maxZoom: 3,
-                zoomSnap: 0.5,
-                zoomDelta: 0.5,
+                zoomSnap: 0.25,
+                zoomDelta: 0.25,
+                zoomControl: false,
                 attributionControl: false
             });
             const lsBounds = [[0, 0], [lsConfig.height, lsConfig.width]];
-            L.imageOverlay(lsConfig.image, lsBounds).addTo(maps.ls);
+            const lsOverlay = L.imageOverlay(lsConfig.image, lsBounds).addTo(maps.ls);
             maps.ls.fitBounds(lsBounds);
-            maps.ls.setZoom(-1);
+            maps.ls.setZoom(lsConfig.defaultZoom);
 
-            // Cayo Perico Map
+            lsOverlay.on('load', () => {
+                maps.ls.invalidateSize();
+            });
+
             const cayoConfig = CONFIG.maps.cayo;
             maps.cayo = L.map('map-cayo', {
                 crs: L.CRS.Simple,
-                minZoom: -3,
+                minZoom: -4,
                 maxZoom: 3,
-                zoomSnap: 0.5,
-                zoomDelta: 0.5,
+                zoomSnap: 0.25,
+                zoomDelta: 0.25,
+                zoomControl: false,
                 attributionControl: false
             });
             const cayoBounds = [[0, 0], [cayoConfig.height, cayoConfig.width]];
-            L.imageOverlay(cayoConfig.image, cayoBounds).addTo(maps.cayo);
+            const cayoOverlay = L.imageOverlay(cayoConfig.image, cayoBounds).addTo(maps.cayo);
             maps.cayo.fitBounds(cayoBounds);
-            maps.cayo.setZoom(-1);
+            maps.cayo.setZoom(cayoConfig.defaultZoom);
+
+            cayoOverlay.on('load', () => {
+                maps.cayo.invalidateSize();
+            });
 
             markerLayers.ls = L.layerGroup().addTo(maps.ls);
             markerLayers.cayo = L.layerGroup().addTo(maps.cayo);
@@ -1023,15 +1186,14 @@
             renderMarkers();
             setupFiltersUI();
             setupEventListeners();
-            checkUrlHashOnLoad();
+            updateFavoritesCounter();
 
-            // Set initial active map view properly
-            if (state.currentMap === 'cayo') {
-                document.getElementById('map-ls-view').classList.remove('active');
-                document.getElementById('map-cayo-view').classList.add('active');
-                document.getElementById('map-switch-btn').textContent = 'Schimbă pe Los Santos';
-                setTimeout(() => maps.cayo.invalidateSize(), 200);
-            }
+            setTimeout(() => {
+                maps.ls.invalidateSize();
+                maps.cayo.invalidateSize();
+            }, 150);
+
+            applyActiveTabState(state.currentMap);
         }
 
         /* ==========================================
@@ -1116,6 +1278,30 @@
             document.getElementById('active-count').textContent = `${active}/${total} active`;
         }
 
+        function updateFavoritesCounter() {
+            const counterEl = document.getElementById('fav-counter-badge');
+            if (counterEl) {
+                counterEl.textContent = state.favorites.length;
+            }
+        }
+
+        function resetCurrentMapView() {
+            const mapCfg = CONFIG.maps[state.currentMap];
+            const bounds = [[0, 0], [mapCfg.height, mapCfg.width]];
+            maps[state.currentMap].fitBounds(bounds);
+            maps[state.currentMap].setZoom(mapCfg.defaultZoom);
+            showToast('Hartă recentrată');
+        }
+
+        function showFavoritesList() {
+            if (state.favorites.length === 0) {
+                showToast('Nu ai nicio locație favorită salvată');
+                return;
+            }
+            selectLocation(state.favorites[0]);
+            showToast(`Se afișează prima favorită (${state.favorites.length} totale)`);
+        }
+
         /* ==========================================
            SIDEBAR & GALLERY LOGIC
            ========================================== */
@@ -1146,6 +1332,27 @@
             document.getElementById('sb-rewards').textContent = loc.rewards || 'Standard';
             document.getElementById('sb-notes').textContent = loc.notes || 'Fără note suplimentare.';
             document.getElementById('sb-updated').textContent = `Modificat: ${loc.lastUpdated || '2026-07-25'}`;
+
+            const recipeWrapper = document.getElementById('sb-recipe-wrapper');
+            const recipeCustomTitle = document.getElementById('sb-recipe-custom-title');
+            const recipeCustomDesc = document.getElementById('sb-recipe-custom-desc');
+            const recipeText = document.getElementById('sb-recipe-text');
+            
+            if (loc.id === 'camera-tortura') {
+                recipeWrapper.classList.remove('active');
+            } else if (loc.category === 'weapons') {
+                recipeWrapper.classList.add('active');
+                recipeCustomTitle.textContent = 'Centru Crafting & Rețete Arme';
+                recipeCustomDesc.textContent = 'Verifică necesarul de materiale, componente și schițele exacte pentru fabricarea armamentului.';
+                recipeText.textContent = 'Vezi Rețete Arme & Calculator';
+            } else if (loc.category === 'drugs') {
+                recipeWrapper.classList.add('active');
+                recipeCustomTitle.textContent = 'Centru Procesare & Rețete Droguri';
+                recipeCustomDesc.textContent = 'Calculează proporțiile optime de substanțe și verifică rețetele pentru procesarea eficientă.';
+                recipeText.textContent = 'Vezi Rețete Droguri & Calculator';
+            } else {
+                recipeWrapper.classList.remove('active');
+            }
 
             const favBtn = document.getElementById('sb-favorite-btn');
             if (state.favorites.includes(loc.id)) {
@@ -1233,12 +1440,15 @@
             document.getElementById('sidebar').classList.remove('open');
             state.selectedLocationId = null;
             history.pushState("", document.title, window.location.pathname + window.location.search);
+            
+            // Aici harta revine la centrat/standard când se închide panoul de detalii
+            resetCurrentMapView();
         }
 
         /* ==========================================
            MAP TRANSITION ANIMATION & SWITCHING
            ========================================== */
-        function switchMap(targetMapId, updateButtonText = true) {
+        function switchMap(targetMapId) {
             if (state.currentMap === targetMapId) return;
 
             const oldView = document.getElementById(`map-${state.currentMap}-view`);
@@ -1253,13 +1463,14 @@
                     maps[targetMapId].invalidateSize();
                 }, 100);
 
-                if (updateButtonText) {
-                    const btn = document.getElementById('map-switch-btn');
-                    btn.textContent = targetMapId === 'ls' ? 'Schimbă pe Cayo Perico' : 'Schimbă pe Los Santos';
-                }
-
+                applyActiveTabState(targetMapId);
                 localStorage.setItem('gta_guide_last_map', targetMapId);
             }, 300);
+        }
+
+        function applyActiveTabState(mapId) {
+            document.getElementById('tab-ls').classList.toggle('active', mapId === 'ls');
+            document.getElementById('tab-cayo').classList.toggle('active', mapId === 'cayo');
         }
 
         /* ==========================================
@@ -1327,11 +1538,6 @@
         }
 
         function setupEventListeners() {
-            document.getElementById('map-switch-btn').addEventListener('click', () => {
-                const nextMap = state.currentMap === 'ls' ? 'cayo' : 'ls';
-                switchMap(nextMap);
-            });
-
             document.getElementById('sb-close-btn').addEventListener('click', closeSidebar);
 
             document.getElementById('sb-favorite-btn').addEventListener('click', () => {
@@ -1352,6 +1558,7 @@
                     showToast('Adăugat la favorite');
                 }
                 localStorage.setItem('gta_guide_favorites', JSON.stringify(state.favorites));
+                updateFavoritesCounter();
             });
 
             document.getElementById('sb-copy-btn').addEventListener('click', () => {
@@ -1379,32 +1586,9 @@
                     const searchInput = document.getElementById('search-input');
                     if (searchInput) searchInput.focus();
                 }
-                if (e.key.toLowerCase() === 'm' && document.activeElement.tagName !== 'INPUT') {
-                    const nextMap = state.currentMap === 'ls' ? 'cayo' : 'ls';
-                    switchMap(nextMap);
-                }
-                if (document.getElementById('sidebar').classList.contains('open') && currentSelectedLocation && currentSelectedLocation.images) {
-                    const totalImages = currentSelectedLocation.images.length;
-                    if (totalImages > 1) {
-                        if (e.key === 'ArrowLeft') changeSlide(-1, totalImages);
-                        if (e.key === 'ArrowRight') changeSlide(1, totalImages);
-                    }
-                }
             });
 
             setupSearch();
-        }
-
-        function checkUrlHashOnLoad() {
-            const hash = window.location.hash.replace('#', '');
-            if (hash) {
-                const match = DATA.find(item => item.id === hash);
-                if (match) {
-                    setTimeout(() => {
-                        selectLocation(match.id);
-                    }, 500);
-                }
-            }
         }
 
         window.addEventListener('DOMContentLoaded', initMaps);

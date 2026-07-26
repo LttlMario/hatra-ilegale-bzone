@@ -1834,6 +1834,11 @@
                 recipeCustomTitle.textContent = 'Centru Procesare & Rețete Droguri';
                 recipeCustomDesc.textContent = 'Calculează proporțiile optime de substanțe și verifică rețetele pentru procesarea eficientă.';
                 recipeText.textContent = 'Vezi Rețete Droguri & Calculator';
+            } else if (loc.category === 'mushrooms') {
+                recipeWrapper.classList.add('active');
+                recipeCustomTitle.textContent = 'Centru Cules & Rețete Ciuperci';
+                recipeCustomDesc.textContent = 'Accesează calculatorul universal pentru a verifica resursele, necesarul și cantitățile exacte pentru ciuperci.';
+                recipeText.textContent = 'Vezi Rețete & Calculator';
             } else {
                 recipeWrapper.classList.remove('active');
             }

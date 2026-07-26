@@ -360,7 +360,7 @@
         /* Map Selection Group */
         .map-switcher-group {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
 
@@ -368,7 +368,7 @@
             background: var(--bg-main);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
-            padding: 10px 12px;
+            padding: 10px 8px;
             border-radius: 8px;
             font-size: 13px;
             font-weight: 600;
@@ -879,7 +879,8 @@
                     <div class="menu-section-title">Selectare Hartă</div>
                     <div class="map-switcher-group">
                         <button class="map-switch-btn active" id="tab-ls" onclick="switchMap('ls')">Los Santos</button>
-                        <button class="map-switch-btn" id="tab-cayo" onclick="switchMap('cayo')">Cayo Perico</button>
+                        <button class="map-switch-btn" id="tab-cayo" onclick="switchMap('cayo')">Cayo</button>
+                        <button class="map-switch-btn" id="tab-maldive" onclick="switchMap('maldive')">Maldive</button>
                     </div>
                 </div>
 
@@ -927,6 +928,7 @@
                                 <select id="l-inp-map">
                                     <option value="ls">Los Santos</option>
                                     <option value="cayo">Cayo Perico</option>
+                                    <option value="maldive">Maldive</option>
                                 </select>
                                 <select id="l-inp-category">
                                     <option value="deliveries">Livrări</option>
@@ -961,9 +963,16 @@
                                 <input type="text" id="l-inp-img" placeholder="Imagine.jpg">
                             </div>
                         </div>
+
+                        <!-- Buton dedicat pentru Mutare Pin pe Hartă (LS / Cayo / Maldive) -->
+                        <div class="admin-form-group">
+                            <label>Poziționare Pin</label>
+                            <button class="btn" onclick="activeazaMutarePinStanga()" style="background:var(--accent); color:#0b1220; border-color:var(--accent); font-size:12px; justify-content:center; width:100%;">📍 Mută Pin (Click pe Hartă)</button>
+                        </div>
+
                         <div class="admin-btn-group">
                             <button class="btn" onclick="salveazaModificariStanga()" style="background:var(--success); color:#0b1220; border-color:var(--success); font-size:12px; justify-content:center;">Salvează</button>
-                            <button class="btn" onclick="activeazaMutarePinStanga()" style="background:var(--accent); color:#0b1220; border-color:var(--accent); font-size:12px; justify-content:center;">Mută Pin</button>
+                            <button class="btn" onclick="copiazaPinulSelectat()" style="background:var(--accent); color:#0b1220; border-color:var(--accent); font-size:12px; justify-content:center;" title="Copiază pinul selectat cu aceleași detalii">📋 Copiază Pin</button>
                         </div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top:2px;">
                             <button class="btn" onclick="anuleazaEditareStanga()" style="font-size:12px; justify-content:center;">Anulează</button>
@@ -989,6 +998,11 @@
             <!-- Cayo Perico Map View -->
             <div class="map-view" id="map-cayo-view">
                 <div id="map-cayo" style="width:100%; height:100%;"></div>
+            </div>
+
+            <!-- Maldive Map View -->
+            <div class="map-view" id="map-maldive-view">
+                <div id="map-maldive" style="width:100%; height:100%;"></div>
             </div>
 
             <!-- Right Sidebar -->
@@ -1050,7 +1064,7 @@
     <div class="modal" id="imageModal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-modal" onclick="closeModal()">&times;</button>
-            <img id="modalImg" src="" alt="Imagine Mărită">
+            <img id="modalImg" alt="Imagine Mărită">
         </div>
     </div>
 
@@ -1086,6 +1100,14 @@
                     width: 1122,
                     height: 1060,
                     image: 'cayo.jpg',
+                    defaultZoom: -1
+                },
+                maldive: {
+                    id: 'maldive',
+                    name: 'Maldive',
+                    width: 1440,
+                    height: 864,
+                    image: 'maldive.jpg',
                     defaultZoom: -1
                 }
             },
@@ -1368,8 +1390,32 @@
                 handleMapClickForPinMove(e, 'cayo');
             });
 
+            const maldiveConfig = CONFIG.maps.maldive;
+            maps.maldive = L.map('map-maldive', {
+                crs: L.CRS.Simple,
+                minZoom: -4,
+                maxZoom: 3,
+                zoomSnap: 0.25,
+                zoomDelta: 0.25,
+                zoomControl: false,
+                attributionControl: false
+            });
+            const maldiveBounds = [[0, 0], [maldiveConfig.height, maldiveConfig.width]];
+            const maldiveOverlay = L.imageOverlay(maldiveConfig.image, maldiveBounds).addTo(maps.maldive);
+            maps.maldive.fitBounds(maldiveBounds);
+            maps.maldive.setZoom(maldiveConfig.defaultZoom);
+
+            maldiveOverlay.on('load', () => {
+                maps.maldive.invalidateSize();
+            });
+
+            maps.maldive.on('click', (e) => {
+                handleMapClickForPinMove(e, 'maldive');
+            });
+
             markerLayers.ls = L.layerGroup().addTo(maps.ls);
             markerLayers.cayo = L.layerGroup().addTo(maps.cayo);
+            markerLayers.maldive = L.layerGroup().addTo(maps.maldive);
 
             renderMarkers();
             setupFiltersUI();
@@ -1379,6 +1425,7 @@
             setTimeout(() => {
                 maps.ls.invalidateSize();
                 maps.cayo.invalidateSize();
+                maps.maldive.invalidateSize();
             }, 150);
 
             applyActiveTabState(state.currentMap);
@@ -1390,6 +1437,7 @@
         function renderMarkers() {
             markerLayers.ls.clearLayers();
             markerLayers.cayo.clearLayers();
+            markerLayers.maldive.clearLayers();
 
             DATA.forEach(loc => {
                 if (!state.activeFilters.includes(loc.category)) return;
@@ -1398,6 +1446,8 @@
                 if (!catInfo) return;
 
                 const mapCfg = CONFIG.maps[loc.map];
+                if (!mapCfg) return;
+
                 const lat = mapCfg.height - (loc.y / 100) * mapCfg.height;
                 const lng = (loc.x / 100) * mapCfg.width;
 
@@ -1424,6 +1474,8 @@
                     markerLayers.ls.addLayer(marker);
                 } else if (loc.map === 'cayo') {
                     markerLayers.cayo.addLayer(marker);
+                } else if (loc.map === 'maldive') {
+                    markerLayers.maldive.addLayer(marker);
                 }
             });
         }
@@ -1623,7 +1675,10 @@
 
         function activeazaMutarePinStanga() {
             let targetId = isCreatingNewLocation ? DATA[DATA.length - 1].id : (currentSelectedLocation ? currentSelectedLocation.id : null);
-            if (!targetId) return;
+            if (!targetId) {
+                showToast('Selectează mai întâi o locație din listă sau hartă!');
+                return;
+            }
 
             const loc = DATA.find(item => item.id === targetId);
             if (!loc) return;
@@ -1636,7 +1691,36 @@
             if (loc.map !== state.currentMap) {
                 switchMap(loc.map);
             }
-            showToast(`Click oriunde pe hartă pentru a muta pinul "${loc.title}"!`);
+            showToast(`Click oriunde pe harta ${loc.map.toUpperCase()} pentru a muta pinul "${loc.title}"!`);
+        }
+
+        function copiazaPinulSelectat() {
+            if (!currentSelectedLocation || !isAdminLoggedIn) {
+                showToast('Niciun pin selectat pentru copiere!');
+                return;
+            }
+
+            const source = currentSelectedLocation;
+            const duplicatedLoc = {
+                id: 'loc-' + Date.now(),
+                map: source.map,
+                category: source.category,
+                title: source.title + ' (Copie)',
+                description: source.description,
+                images: source.images ? [...source.images] : ['image_6d67a5.jpg'],
+                x: Math.min(95, source.x + 3),
+                y: Math.min(95, source.y + 3),
+                notes: source.notes,
+                requirements: source.requirements,
+                rewards: source.rewards,
+                lastUpdated: new Date().toISOString().split('T')[0]
+            };
+
+            DATA.push(duplicatedLoc);
+            salveazaDateleInStorage();
+            inchidePanouEditareStanga();
+            selectLocation(duplicatedLoc.id);
+            showToast('Pin copiat cu succes! Poți folosi Mută Pin pentru a-l repoziționa.');
         }
 
         function handleMapClickForPinMove(e, mapKey) {
@@ -1650,7 +1734,7 @@
             }
 
             if (loc.map !== mapKey) {
-                showToast(`Această locație aparține hărții ${loc.map.toUpperCase()}! Schimbă harta.`);
+                showToast(`Această locație aparține hărții ${loc.map.toUpperCase()}! Schimbă harta din meniu.`);
                 return;
             }
 
@@ -1869,6 +1953,7 @@
         function applyActiveTabState(mapId) {
             document.getElementById('tab-ls').classList.toggle('active', mapId === 'ls');
             document.getElementById('tab-cayo').classList.toggle('active', mapId === 'cayo');
+            document.getElementById('tab-maldive').classList.toggle('active', mapId === 'maldive');
         }
 
         /* ==========================================
@@ -1897,7 +1982,7 @@
                     return;
                 }
 
-                    resultsBox.innerHTML = '';
+                resultsBox.innerHTML = '';
                 matches.forEach(match => {
                     const cat = CONFIG.categories[match.category];
                     const div = document.createElement('div');

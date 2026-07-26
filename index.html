@@ -338,7 +338,9 @@
             border-radius: var(--border-radius);
             padding: 20px;
             z-index: 900;
-            width: 310px;
+            width: 340px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
             box-shadow: var(--shadow);
             backdrop-filter: blur(12px);
             display: flex;
@@ -417,12 +419,71 @@
         #admin-controls-section {
             display: none;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             border-top: 1px solid var(--border-color);
             padding-top: 14px;
         }
         #admin-controls-section.active {
             display: flex;
+        }
+
+        /* Interactive Left Editor Box */
+        .admin-edit-panel {
+            background: var(--bg-main);
+            border: 1px solid var(--success);
+            border-radius: 8px;
+            padding: 14px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            animation: fadeInOut 0.3s ease;
+        }
+        .admin-edit-panel.active {
+            display: flex;
+        }
+        .admin-edit-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--success);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Form elements inside Left Panel */
+        .admin-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .admin-form-group label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .admin-form-group input, .admin-form-group textarea, .admin-form-group select {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .admin-form-group input:focus, .admin-form-group textarea:focus, .admin-form-group select:focus {
+            border-color: var(--success);
+        }
+        .admin-form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .admin-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 4px;
         }
 
         /* Filters Section */
@@ -542,7 +603,7 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            max-width: 200px;
+            max-width: 140px;
             justify-content: flex-end;
         }
 
@@ -663,7 +724,7 @@
             padding-top: 12px;
         }
 
-        /* Modern Modal / Editor Dialogs */
+        /* Modern Modal / Lightbox */
         .modal {
             display: none;
             position: fixed;
@@ -695,88 +756,6 @@
             object-fit: contain;
             border-radius: var(--border-radius);
             border: 1px solid var(--border-color);
-        }
-
-        /* Modern Dialog Form Overlay Styles */
-        .dialog-box {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            width: 440px;
-            max-width: 95vw;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            animation: modalScaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes modalScaleUp {
-            0% { opacity: 0; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .dialog-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .dialog-body {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input, .form-group textarea, .form-group select {
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 14px;
-            outline: none;
-            transition: var(--transition);
-        }
-
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .dialog-footer {
-            padding: 14px 20px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            background: var(--bg-main);
         }
 
         .close-modal {
@@ -834,7 +813,7 @@
                 left: 10px;
                 transform: none;
                 width: calc(100% - 20px);
-                max-height: 200px;
+                max-height: 250px;
                 overflow-y: auto;
             }
             .sidebar {
@@ -918,7 +897,7 @@
                     </div>
                 </div>
 
-                <!-- Admin Controls Panel (Disponibil doar după introducerea parolei) -->
+                <!-- Admin Controls Panel (Disponibil doar după autentificare) -->
                 <div id="admin-controls-section">
                     <div class="menu-section-title" style="color: var(--success);">Panou Administrator</div>
                     <div class="quick-tools-grid">
@@ -930,6 +909,66 @@
                             <span>Exportă Datele (JSON)</span>
                             <span>💾</span>
                         </button>
+                    </div>
+
+                    <!-- Interactive Left Side Edit/Manage Form -->
+                    <div class="admin-edit-panel" id="admin-edit-panel">
+                        <div class="admin-edit-title">
+                            <span id="left-panel-mode-title">Editare Locație</span>
+                            <span style="cursor:pointer;" onclick="inchidePanouEditareStanga()">✕</span>
+                        </div>
+                        <div class="admin-form-group">
+                            <label>Titlu Locație</label>
+                            <input type="text" id="l-inp-title">
+                        </div>
+                        <div class="admin-form-group">
+                            <label>Hartă / Categorie</label>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                                <select id="l-inp-map">
+                                    <option value="ls">Los Santos</option>
+                                    <option value="cayo">Cayo Perico</option>
+                                </select>
+                                <select id="l-inp-category">
+                                    <option value="deliveries">Livrări</option>
+                                    <option value="hospitals">Spitale</option>
+                                    <option value="drugs">Droguri</option>
+                                    <option value="weapons">Arme</option>
+                                    <option value="suppliers">Achiziții</option>
+                                    <option value="mushrooms">Ciuperci</option>
+                                    <option value="metals">Căutat Metale</option>
+                                    <option value="smeltery">Topitorie</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="admin-form-group">
+                            <label>Descriere</label>
+                            <textarea id="l-inp-desc"></textarea>
+                        </div>
+                        <div class="admin-form-group" style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                            <div>
+                                <label>Cerințe</label>
+                                <input type="text" id="l-inp-req">
+                            </div>
+                            <div>
+                                <label>Recompense</label>
+                                <input type="text" id="l-inp-rew">
+                            </div>
+                        </div>
+                        <div class="admin-form-group">
+                            <label>Note & Imagine</label>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                                <input type="text" id="l-inp-notes" placeholder="Note">
+                                <input type="text" id="l-inp-img" placeholder="Imagine.jpg">
+                            </div>
+                        </div>
+                        <div class="admin-btn-group">
+                            <button class="btn" onclick="salveazaModificariStanga()" style="background:var(--success); color:#0b1220; border-color:var(--success); font-size:12px; justify-content:center;">Salvează</button>
+                            <button class="btn" onclick="activeazaMutarePinStanga()" style="background:var(--accent); color:#0b1220; border-color:var(--accent); font-size:12px; justify-content:center;">Mută Pin</button>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top:2px;">
+                            <button class="btn" onclick="anuleazaEditareStanga()" style="font-size:12px; justify-content:center;">Anulează</button>
+                            <button class="btn" onclick="stergeLocatieStanga()" style="background:rgba(255,85,85,0.15); color:var(--danger); border-color:var(--danger); font-size:12px; justify-content:center;">Șterge</button>
+                        </div>
                     </div>
                 </div>
 
@@ -962,10 +1001,7 @@
                     <div class="sidebar-actions">
                         <button class="icon-btn" id="sb-favorite-btn" title="Adaugă la Favorite">⭐</button>
                         <button class="icon-btn" id="sb-copy-btn" title="Copiază Informațiile">📋</button>
-                        <button class="icon-btn" id="sb-edit-btn" onclick="editeazaLocatieCurenta()" title="Editează Detaliile" style="display:none; border-color: var(--success); color: var(--success);">✏️</button>
-                        <button class="icon-btn" id="sb-move-map-btn" onclick="deschideDialogMutareHarta()" title="Mută pe altă hartă" style="display:none; border-color: var(--accent); color: var(--accent);">🗺️</button>
-                        <button class="icon-btn" id="sb-move-btn" onclick="activeazaMutarePin()" title="Mută Pinul pe Hartă" style="display:none; border-color: var(--accent); color: var(--accent);">📍</button>
-                        <button class="icon-btn" id="sb-delete-btn" onclick="stergeLocatieCurenta()" title="Șterge Locația" style="display:none; border-color: var(--danger); color: var(--danger);">🗑️</button>
+                        <button class="icon-btn" id="sb-edit-panel-btn" onclick="deschidePanouAdminStanga()" title="Editează în Panoul Stâng" style="display:none; border-color: var(--success); color: var(--success);">✏️</button>
                         <button class="icon-btn" id="sb-close-btn" title="Închide">✕</button>
                     </div>
                 </div>
@@ -1018,23 +1054,6 @@
         </div>
     </div>
 
-    <!-- Modern Admin Dialog Modal / Editor -->
-    <div class="modal" id="adminDialogModal">
-        <div class="dialog-box" onclick="event.stopPropagation()">
-            <div class="dialog-header">
-                <span id="dialog-title-text">Editare Locație</span>
-                <button onclick="closeAdminDialog()" style="background:none; border:none; color:var(--text-main); font-size:18px; cursor:pointer;">✕</button>
-            </div>
-            <div class="dialog-body" id="dialog-body-content">
-                <!-- Form fields injected dynamically -->
-            </div>
-            <div class="dialog-footer">
-                <button class="btn" onclick="closeAdminDialog()">Anulează</button>
-                <button class="btn" id="dialog-save-btn" style="background: var(--accent); color: #0b1220; border-color: var(--accent);">Salvează</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
@@ -1049,6 +1068,7 @@
         let isAdminLoggedIn = false;
         let isDraggingPin = false;
         let draggingMarkerId = null;
+        let isCreatingNewLocation = false;
 
         const CONFIG = {
             maps: {
@@ -1074,7 +1094,10 @@
                 hospitals: { name: 'Spitale & Medical', icon: '🏥', color: '#3b82f6' },
                 drugs: { name: 'Droguri & Procesare', icon: '🌿', color: '#46d369' },
                 weapons: { name: 'Arme & Craftare', icon: '⚙️', color: '#ff5555' },
-                suppliers: { name: 'Achiziții & Altele', icon: '🧪', color: '#a855f7' }
+                suppliers: { name: 'Achiziții & Altele', icon: '🧪', color: '#a855f7' },
+                mushrooms: { name: 'Ciuperci', icon: '🍄', color: '#ec4899' },
+                metals: { name: 'Căutat Metale', icon: '⛏️', color: '#eab308' },
+                smeltery: { name: 'Topitorie', icon: '🔥', color: '#f97316' }
             }
         };
 
@@ -1468,7 +1491,7 @@
         }
 
         /* ==========================================
-           ADMIN LOGIN & MODERN EDITING SYSTEM
+           ADMIN LOGIN & LEFT SIDEBAR EDITING SYSTEM
            ========================================== */
         function logheazaAdmin() {
             if (isAdminLoggedIn) {
@@ -1483,10 +1506,7 @@
                 document.getElementById('admin-controls-section').classList.add('active');
                 
                 if (currentSelectedLocation) {
-                    document.getElementById('sb-edit-btn').style.display = 'flex';
-                    document.getElementById('sb-move-map-btn').style.display = 'flex';
-                    document.getElementById('sb-move-btn').style.display = 'flex';
-                    document.getElementById('sb-delete-btn').style.display = 'flex';
+                    document.getElementById('sb-edit-panel-btn').style.display = 'flex';
                 }
                 showToast('Autentificare reușită! Modul Admin activ.');
             } else if (parolaIntrodusa !== null) {
@@ -1499,73 +1519,67 @@
             renderMarkers();
         }
 
-        function closeAdminDialog() {
-            document.getElementById('adminDialogModal').classList.remove('active');
+        function deschidePanouAdminStanga() {
+            if (!currentSelectedLocation || !isAdminLoggedIn) return;
+            isCreatingNewLocation = false;
+            document.getElementById('left-panel-mode-title').textContent = "Editează Locația";
+            
+            const loc = currentSelectedLocation;
+            document.getElementById('l-inp-title').value = loc.title;
+            document.getElementById('l-inp-map').value = loc.map;
+            document.getElementById('l-inp-category').value = loc.category;
+            document.getElementById('l-inp-desc').value = loc.description || '';
+            document.getElementById('l-inp-req').value = loc.requirements || '';
+            document.getElementById('l-inp-rew').value = loc.rewards || '';
+            document.getElementById('l-inp-notes').value = loc.notes || '';
+            document.getElementById('l-inp-img').value = (loc.images && loc.images[0]) ? loc.images[0] : 'image_6d67a5.jpg';
+
+            document.getElementById('admin-edit-panel').classList.add('active');
         }
 
         function deschideFormularAdaugare() {
-            const modal = document.getElementById('adminDialogModal');
-            document.getElementById('dialog-title-text').textContent = "Adaugă Locație Nouă";
-            
-            const bodyContent = document.getElementById('dialog-body-content');
-            bodyContent.innerHTML = `
-                <div class="form-group">
-                    <label>Titlu Locație</label>
-                    <input type="text" id="inp-title" placeholder="Ex: Punct de recoltare...">
-                </div>
-                <div class="form-group">
-                    <label>Hartă</label>
-                    <select id="inp-map">
-                        <option value="ls">Los Santos & Blaine County</option>
-                        <option value="cayo">Cayo Perico</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Categorie</label>
-                    <select id="inp-category">
-                        <option value="deliveries">Livrări & Rulote</option>
-                        <option value="hospitals">Spitale & Medical</option>
-                        <option value="drugs">Droguri & Procesare</option>
-                        <option value="weapons">Arme & Craftare</option>
-                        <option value="suppliers">Achiziții & Altele</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Descriere</label>
-                    <textarea id="inp-desc" placeholder="Detalii despre locație..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Cerințe</label>
-                    <input type="text" id="inp-req" value="Niciuna">
-                </div>
-                <div class="form-group">
-                    <label>Recompense</label>
-                    <input type="text" id="inp-rew" value="Standard">
-                </div>
-                <div class="form-group">
-                    <label>Note</label>
-                    <input type="text" id="inp-notes" value="Fără note suplimentare">
-                </div>
-                <div class="form-group">
-                    <label>Imagine (Nume fișier)</label>
-                    <input type="text" id="inp-img" value="image_6d67a5.jpg">
-                </div>
-            `;
+            if (!isAdminLoggedIn) return;
+            isCreatingNewLocation = true;
+            document.getElementById('left-panel-mode-title').textContent = "Adaugă Locație Nouă";
 
-            document.getElementById('dialog-save-btn').onclick = () => {
-                const title = document.getElementById('inp-title').value.trim();
-                if (!title) {
-                    alert('Titlul este obligatoriu!');
-                    return;
-                }
-                const map = document.getElementById('inp-map').value;
-                const category = document.getElementById('inp-category').value;
-                const description = document.getElementById('inp-desc').value;
-                const requirements = document.getElementById('inp-req').value;
-                const rewards = document.getElementById('inp-rew').value;
-                const notes = document.getElementById('inp-notes').value;
-                const img = document.getElementById('inp-img').value.trim() || 'image_6d67a5.jpg';
+            document.getElementById('l-inp-title').value = '';
+            document.getElementById('l-inp-map').value = state.currentMap;
+            document.getElementById('l-inp-category').value = 'deliveries';
+            document.getElementById('l-inp-desc').value = '';
+            document.getElementById('l-inp-req').value = 'Niciuna';
+            document.getElementById('l-inp-rew').value = 'Standard';
+            document.getElementById('l-inp-notes').value = '';
+            document.getElementById('l-inp-img').value = 'image_6d67a5.jpg';
 
+            document.getElementById('admin-edit-panel').classList.add('active');
+            showToast('Completează detaliile în stânga și apasă Salvează, apoi dă click pe hartă!');
+        }
+
+        function inchidePanouEditareStanga() {
+            document.getElementById('admin-edit-panel').classList.remove('active');
+            isCreatingNewLocation = false;
+        }
+
+        function anuleazaEditareStanga() {
+            inchidePanouEditareStanga();
+        }
+
+        function salveazaModificariStanga() {
+            const title = document.getElementById('l-inp-title').value.trim();
+            if (!title) {
+                alert('Titlul este obligatoriu!');
+                return;
+            }
+
+            const map = document.getElementById('l-inp-map').value;
+            const category = document.getElementById('l-inp-category').value;
+            const description = document.getElementById('l-inp-desc').value;
+            const requirements = document.getElementById('l-inp-req').value;
+            const rewards = document.getElementById('l-inp-rew').value;
+            const notes = document.getElementById('l-inp-notes').value;
+            const img = document.getElementById('l-inp-img').value.trim() || 'image_6d67a5.jpg';
+
+            if (isCreatingNewLocation) {
                 const nouaLocatie = {
                     id: 'loc-' + Date.now(),
                     map: map,
@@ -1583,136 +1597,46 @@
 
                 DATA.push(nouaLocatie);
                 salveazaDateleInStorage();
-                closeAdminDialog();
+                inchidePanouEditareStanga();
                 selectLocation(nouaLocatie.id);
-                activeazaMutarePin();
-                showToast('Locație adăugată! Dă click pe hartă pentru a plasa pinul.');
-            };
-
-            modal.classList.add('active');
-        }
-
-        function editeazaLocatieCurenta() {
-            if (!currentSelectedLocation || !isAdminLoggedIn) return;
-            const loc = currentSelectedLocation;
-            
-            const modal = document.getElementById('adminDialogModal');
-            document.getElementById('dialog-title-text').textContent = `Editează: ${loc.title}`;
-            
-            const bodyContent = document.getElementById('dialog-body-content');
-            bodyContent.innerHTML = `
-                <div class="form-group">
-                    <label>Titlu Locație</label>
-                    <input type="text" id="inp-title" value="${loc.title}">
-                </div>
-                <div class="form-group">
-                    <label>Categorie</label>
-                    <select id="inp-category">
-                        <option value="deliveries" ${loc.category === 'deliveries' ? 'selected' : ''}>Livrări & Rulote</option>
-                        <option value="hospitals" ${loc.category === 'hospitals' ? 'selected' : ''}>Spitale & Medical</option>
-                        <option value="drugs" ${loc.category === 'drugs' ? 'selected' : ''}>Droguri & Procesare</option>
-                        <option value="weapons" ${loc.category === 'weapons' ? 'selected' : ''}>Arme & Craftare</option>
-                        <option value="suppliers" ${loc.category === 'suppliers' ? 'selected' : ''}>Achiziții & Altele</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Descriere</label>
-                    <textarea id="inp-desc">${loc.description || ''}</textarea>
-                </div>
-                <div class="form-group">
-                    <label>Cerințe</label>
-                    <input type="text" id="inp-req" value="${loc.requirements || 'Niciuna'}">
-                </div>
-                <div class="form-group">
-                    <label>Recompense</label>
-                    <input type="text" id="inp-rew" value="${loc.rewards || 'Standard'}">
-                </div>
-                <div class="form-group">
-                    <label>Note</label>
-                    <input type="text" id="inp-notes" value="${loc.notes || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Imagine Principală</label>
-                    <input type="text" id="inp-img" value="${loc.images && loc.images[0] ? loc.images[0] : 'image_6d67a5.jpg'}">
-                </div>
-            `;
-
-            document.getElementById('dialog-save-btn').onclick = () => {
-                const title = document.getElementById('inp-title').value.trim();
-                if (!title) {
-                    alert('Titlul nu poate fi gol!');
-                    return;
-                }
+                activeazaMutarePinStanga();
+                showToast('Locație creată! Click pe hartă pentru a poziționa pinul.');
+            } else if (currentSelectedLocation) {
+                const loc = currentSelectedLocation;
                 loc.title = title;
-                loc.category = document.getElementById('inp-category').value;
-                loc.description = document.getElementById('inp-desc').value;
-                loc.requirements = document.getElementById('inp-req').value;
-                loc.rewards = document.getElementById('inp-rew').value;
-                loc.notes = document.getElementById('inp-notes').value;
-                const newImg = document.getElementById('inp-img').value.trim();
-                if (newImg) {
-                    if (!loc.images) loc.images = [];
-                    loc.images[0] = newImg;
-                }
+                loc.map = map;
+                loc.category = category;
+                loc.description = description;
+                loc.requirements = requirements;
+                loc.rewards = rewards;
+                loc.notes = notes;
+                if (!loc.images) loc.images = [];
+                loc.images[0] = img;
                 loc.lastUpdated = new Date().toISOString().split('T')[0];
 
                 salveazaDateleInStorage();
-                closeAdminDialog();
+                inchidePanouEditareStanga();
                 selectLocation(loc.id, false);
-                showToast('Locație actualizată cu succes!');
-            };
-
-            modal.classList.add('active');
-        }
-
-        function deschideDialogMutareHarta() {
-            if (!currentSelectedLocation || !isAdminLoggedIn) return;
-            const loc = currentSelectedLocation;
-
-            const modal = document.getElementById('adminDialogModal');
-            document.getElementById('dialog-title-text').textContent = `Mută pe altă hartă: ${loc.title}`;
-            
-            const bodyContent = document.getElementById('dialog-body-content');
-            bodyContent.innerHTML = `
-                <div class="form-group">
-                    <label>Selectează Harta Destinație</label>
-                    <select id="inp-target-map">
-                        <option value="ls" ${loc.map === 'ls' ? 'selected' : ''}>Los Santos & Blaine County</option>
-                        <option value="cayo" ${loc.map === 'cayo' ? 'selected' : ''}>Cayo Perico</option>
-                    </select>
-                </div>
-                <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4;">
-                    Mutarea dintr-o hartă în alta va muta pinul pe noua hartă. După salvare, poți folosi opțiunea de mutare precisă a pinului pentru a-l poziționa exact unde dorești.
-                </p>
-            `;
-
-            document.getElementById('dialog-save-btn').onclick = () => {
-                const targetMap = document.getElementById('inp-target-map').value;
-                loc.map = targetMap;
-                loc.x = 50;
-                loc.y = 50;
-                loc.lastUpdated = new Date().toISOString().split('T')[0];
-
-                salveazaDateleInStorage();
-                closeAdminDialog();
-                selectLocation(loc.id);
-                showToast(`Locația a fost mutată pe ${targetMap === 'ls' ? 'Los Santos' : 'Cayo Perico'}!`);
-            };
-
-            modal.classList.add('active');
-        }
-
-        function activeazaMutarePin() {
-            if (!currentSelectedLocation || !isAdminLoggedIn) return;
-            isDraggingPin = true;
-            draggingMarkerId = currentSelectedLocation.id;
-            
-            if (currentSelectedLocation.map !== state.currentMap) {
-                switchMap(currentSelectedLocation.map);
+                showToast('Modificări salvate cu succes!');
             }
+        }
 
+        function activeazaMutarePinStanga() {
+            let targetId = isCreatingNewLocation ? DATA[DATA.length - 1].id : (currentSelectedLocation ? currentSelectedLocation.id : null);
+            if (!targetId) return;
+
+            const loc = DATA.find(item => item.id === targetId);
+            if (!loc) return;
+
+            isDraggingPin = true;
+            draggingMarkerId = targetId;
+            inchidePanouEditareStanga();
             document.getElementById('sidebar').classList.remove('open');
-            showToast(`Mod mutare activ pentru "${currentSelectedLocation.title}". Click oriunde pe hartă!`);
+
+            if (loc.map !== state.currentMap) {
+                switchMap(loc.map);
+            }
+            showToast(`Click oriunde pe hartă pentru a muta pinul "${loc.title}"!`);
         }
 
         function handleMapClickForPinMove(e, mapKey) {
@@ -1746,16 +1670,18 @@
             isDraggingPin = false;
             const targetId = draggingMarkerId;
             draggingMarkerId = null;
+            isCreatingNewLocation = false;
 
             selectLocation(targetId);
-            showToast('Pinul a fost mutat cu succes pe noua poziție!');
+            showToast('Poziția pinului a fost actualizată!');
         }
 
-        function stergeLocatieCurenta() {
+        function stergeLocatieStanga() {
             if (!currentSelectedLocation || !isAdminLoggedIn) return;
             if (confirm(`Sigur doriți să ștergeți locația "${currentSelectedLocation.title}"?`)) {
                 DATA = DATA.filter(item => item.id !== currentSelectedLocation.id);
                 salveazaDateleInStorage();
+                inchidePanouEditareStanga();
                 closeSidebar();
                 showToast('Locație ștearsă cu succes!');
             }
@@ -1804,10 +1730,7 @@
             document.getElementById('sb-updated').textContent = `Modificat: ${loc.lastUpdated || '2026-07-25'}`;
 
             if (isAdminLoggedIn) {
-                document.getElementById('sb-edit-btn').style.display = 'flex';
-                document.getElementById('sb-move-map-btn').style.display = 'flex';
-                document.getElementById('sb-move-btn').style.display = 'flex';
-                document.getElementById('sb-delete-btn').style.display = 'flex';
+                document.getElementById('sb-edit-panel-btn').style.display = 'flex';
             }
 
             const recipeWrapper = document.getElementById('sb-recipe-wrapper');
@@ -1917,7 +1840,6 @@
             document.getElementById('sidebar').classList.remove('open');
             state.selectedLocationId = null;
             history.pushState("", document.title, window.location.pathname + window.location.search);
-            
             resetCurrentMapView();
         }
 
@@ -1975,7 +1897,7 @@
                     return;
                 }
 
-                resultsBox.innerHTML = '';
+                    resultsBox.innerHTML = '';
                 matches.forEach(match => {
                     const cat = CONFIG.categories[match.category];
                     const div = document.createElement('div');
@@ -2064,4 +1986,3 @@
     </script>
 </body>
 </html>
-```[cite: 3]
